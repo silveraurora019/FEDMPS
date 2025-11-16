@@ -1,20 +1,20 @@
-# # ============= PROSTATE =============
+# # # ============= PROSTATE =============
 # from .rif import RIF
-# # 确保您已经创建了这个文件
-# from .prostate_nifti_dataset import ProstateNIFTIDataset 
+# from .prostate import ProstateStaticDataset 
 # import os
 # from torch.utils.data import DataLoader
 # import logging
 # import torch
 
-# # 关键：确保这里接受 (args, clients) 两个参数
 # def build_dataloader(args, clients): 
 
 #     # 3. 选择 Dataset 类
 #     if args.dataset == 'fundus':
 #         DatasetClass = RIF
 #     elif args.dataset == 'prostate':
-#         DatasetClass = ProstateNIFTIDataset
+#         # 2. 在此处使用新的静态加载器
+#         DatasetClass = ProstateStaticDataset
+#         # (确保 args.data_root 现在指向您在步骤 1 中设置的 OUTPUT_STATIC_DIR)
 #     else:
 #         logging.error(f"Unknown dataset: {args.dataset}")
 #         raise ValueError(f"Unknown dataset: {args.dataset}")
@@ -26,7 +26,7 @@
 
 #     for idx, client in enumerate(clients):
 #         # 4. 实例化 6:2:2 划分
-#         # (移除 isVal, 使用 split='val' 和 split='test')
+#         # (这里的 'split' 参数现在由 ProstateStaticDataset 处理)
 #         train_set = DatasetClass(client_idx=idx, base_path=args.data_root,
 #                                  split='train')
 #         valid_set = DatasetClass(client_idx=idx, base_path=args.data_root,
@@ -60,7 +60,7 @@
 #             client_weight.append(i / total_len)
 #     else:
 #         logging.warning("Total dataset length is zero. Using uniform weights.")
-#         client_weight = [1.0 / len(clients)] * len(clients)
+#         client_weight = [1.0 / len(clients)] * len(clients) if clients else []
 
 #     return train_dls, val_dls, test_dls, client_weight
 
